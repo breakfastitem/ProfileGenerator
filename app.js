@@ -10,6 +10,10 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+/**
+ * Static Vars
+ */
+let employees= [];
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
@@ -35,6 +39,10 @@ const render = require("./lib/htmlRenderer");
 // for the provided `render` function to work! ```
 
 //Asks generic employee questions 
+
+/**
+ * main
+ */
 inquirer.prompt([
     {
         type: "list",
@@ -60,20 +68,17 @@ inquirer.prompt([
 
 ]).then((answers) => {
     let question = "";
-    let name = "";
+   
     //Asks for Specific questions based on type response
     switch (answers.type) {
         case "Intern":
             question = "What school is the intern attending?";
-            name = "school";
             break;
         case "Manager":
-            question = "What is the office number this manager?";
-            name = "officeNumber";
+            question = "What is the office number this manager?";   
             break;
         case "Engineer":
             question = "What is the Enginners github profile?";
-            name = "github";
             break;
     }
 
@@ -81,7 +86,23 @@ inquirer.prompt([
         {
             type: "input",
             messages: question,
-            name: name
+            name: "specific"
         }
-    ]);
+    ]).then((typeAnswer)=>{
+        let employee;
+        switch (answers.type) {
+            case "Intern":
+                employee= new Intern(answers.name,answers.id,answers.email,typeAnswer.specific);
+                break;
+            case "Manager":
+                employee= new Manager(answers.name,answers.id,answers.email,typeAnswer.specific);
+                break;
+            case "Engineer":
+                employee= new Engineer(answers.name,answers.id,answers.email,typeAnswer.specific);
+                break;
+        }
+        employees.push(employee);
+    });
 });
+
+render(employees);
