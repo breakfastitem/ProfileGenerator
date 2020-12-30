@@ -15,6 +15,8 @@ const render = require("./lib/htmlRenderer");
  */
 let employees= [];
 
+let finishedInput=false;
+
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 
@@ -43,66 +45,81 @@ let employees= [];
 /**
  * main
  */
-inquirer.prompt([
-    {
-        type: "list",
-        message: "What type of employee are you?",
-        name: "type",
-        choices: ["Intern", "Manager", "Engineer"]
-    },
-    {
-        type: "input",
-        messages: "What is the employees name?",
-        name: "name"
-    },
-    {
-        type: "input",
-        messages: "What is the employees id?",
-        name: "id"
-    },
-    {
-        type: "input",
-        messages: "What is the employess email?",
-        name: "email"
-    }
-
-]).then((answers) => {
-    let question = "";
-   
-    //Asks for Specific questions based on type response
-    switch (answers.type) {
-        case "Intern":
-            question = "What school is the intern attending?";
-            break;
-        case "Manager":
-            question = "What is the office number this manager?";   
-            break;
-        case "Engineer":
-            question = "What is the Enginners github profile?";
-            break;
-    }
-
+while(!finishedInput ){
     inquirer.prompt([
         {
+            type: "list",
+            message: "What type of employee are you?",
+            name: "type",
+            choices: ["Intern", "Manager", "Engineer"]
+        },
+        {
             type: "input",
-            messages: question,
-            name: "specific"
+            messages: "What is the employees name?",
+            name: "name"
+        },
+        {
+            type: "input",
+            messages: "What is the employees id?",
+            name: "id"
+        },
+        {
+            type: "input",
+            messages: "What is the employess email?",
+            name: "email"
         }
-    ]).then((typeAnswer)=>{
-        let employee;
+    
+    ]).then((answers) => {
+        let question = "";
+       
+        //Asks for Specific questions based on type response
         switch (answers.type) {
             case "Intern":
-                employee= new Intern(answers.name,answers.id,answers.email,typeAnswer.specific);
+                question = "What school is the intern attending?";
                 break;
             case "Manager":
-                employee= new Manager(answers.name,answers.id,answers.email,typeAnswer.specific);
+                question = "What is the office number this manager?";   
                 break;
             case "Engineer":
-                employee= new Engineer(answers.name,answers.id,answers.email,typeAnswer.specific);
+                question = "What is the Enginners github profile?";
                 break;
         }
-        employees.push(employee);
+    
+        inquirer.prompt([
+            {
+                type: "input",
+                messages: question,
+                name: "specific"
+            },
+            {
+                type: "list",
+                messages: question,
+                name: "continue",
+                choices: ["yes","no"]
+            }
+        ]).then((typeAnswer)=>{
+            let employee;
+            switch (answers.type) {
+                case "Intern":
+                    employee= new Intern(answers.name,answers.id,answers.email,typeAnswer.specific);
+                    break;
+                case "Manager":
+                    employee= new Manager(answers.name,answers.id,answers.email,typeAnswer.specific);
+                    break;
+                case "Engineer":
+                    employee= new Engineer(answers.name,answers.id,answers.email,typeAnswer.specific);
+                    break;
+            }
+
+            if(typeAnswer.continue == "no"){
+                finishedInput =true;
+            }
+
+            employees.push(employee);
+        });
     });
-});
+
+}
+
 
 render(employees);
