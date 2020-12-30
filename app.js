@@ -34,12 +34,13 @@ const render = require("./lib/htmlRenderer");
 // object with the correct structure and methods. This structure will be crucial in order
 // for the provided `render` function to work! ```
 
+//Asks generic employee questions 
 inquirer.prompt([
     {
         type: "list",
         message: "What type of employee are you?",
-        name: "Type",
-        choices: ["Intern", "Manager","Engineer"]
+        name: "type",
+        choices: ["Intern", "Manager", "Engineer"]
     },
     {
         type: "input",
@@ -56,5 +57,31 @@ inquirer.prompt([
         messages: "What is the employess email?",
         name: "email"
     }
-    
-]);
+
+]).then((answers) => {
+    let question = "";
+    let name = "";
+    //Asks for Specific questions based on type response
+    switch (answers.type) {
+        case "Intern":
+            question = "What school is the intern attending?";
+            name = "school";
+            break;
+        case "Manager":
+            question = "What is the office number this manager?";
+            name = "officeNumber";
+            break;
+        case "Engineer":
+            question = "What is the Enginners github profile?";
+            name = "github";
+            break;
+    }
+
+    inquirer.prompt([
+        {
+            type: "input",
+            messages: question,
+            name: name
+        }
+    ]);
+});
