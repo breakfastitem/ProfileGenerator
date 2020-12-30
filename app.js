@@ -5,8 +5,11 @@ const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
 
+//Paths Used
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
+
+const templatesDir = path.resolve(__dirname, "templates");
 
 const render = require("./lib/htmlRenderer");
 
@@ -20,7 +23,13 @@ let finishedInput=false;
 /**
  * static functions
  */
-promptInputs = function (){
+
+const replacePlaceholders = (template, placeholder, value) => {
+    const pattern = new RegExp("{{ " + placeholder + " }}", "gm");
+    return template.replace(pattern, value);
+  };
+
+const promptInputs = function (){
     inquirer.prompt([
         {
             type: "list",
@@ -95,7 +104,12 @@ promptInputs = function (){
             if(!finishedInput){
                 promptInputs();
             }else{
-                render(employees);
+                let body = render(employees);
+                let main= fs.readFileSync(path.resolve(templatesDir,"main.html"), "utf-8");
+               
+                main =replacePlaceholders(main,"team",body);
+
+                console.log(main);
             }
         });
     });
