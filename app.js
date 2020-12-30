@@ -109,7 +109,10 @@ const promptInputs = function (){
                
                 main =replacePlaceholders(main,"team",body);
 
-                console.log(main);
+                fs.writeFile(outputPath,main,"utf-8", (err) => {
+                    if (err) throw err;
+                    console.log('Team has been saved to team.html');
+                  });
             }
         });
     });
